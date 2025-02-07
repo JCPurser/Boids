@@ -19,6 +19,10 @@ class Sky:
         self.flocks.append(Flock(0, size=50, surface=self.surface, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
         self.flocks.append(Flock(1, size=50, surface=self.surface, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
 
+        if len(self.flocks) > 9 :
+            print("Numeber of flocks should be less than 10")
+            pygame.quit()
+
         self.boids = [boid for flock in self.flocks for boid in flock.boids]
 
     def update(self):

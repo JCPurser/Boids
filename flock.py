@@ -11,7 +11,7 @@ BEHAVIOUR_MAP = {
     "non-flocking": NonFlockingBehaviour,
 }
 class Flock:
-    def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking"):
+    def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
         """
         Initialize a flock of Boids.
         """
@@ -20,7 +20,8 @@ class Flock:
         self.colour = colour
         self.surface = surface
         self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
-        
+        self.interFlocking = interFlocking
+
         locations = self.random_location()
         self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
 
@@ -46,8 +47,12 @@ class Flock:
         """
         Update the state of the flock.
         """
-        for boid in self.boids:
-            boid.update(self.behaviour, boids)
+        if self.interFlocking:
+            for boid in self.boids:
+                boid.update(self.behaviour, boids)
+        else:
+            for boid in self.boids:
+                boid.update(self.behaviour, self.boids)
 
     def draw(self):
         """

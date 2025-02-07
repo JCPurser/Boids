@@ -2,15 +2,15 @@
 
 import pygame
 import numpy as np
-from boidBehaviour import FlockingBehavior, DirectionalBehavior
+from boidBehaviour import FlockingBehaviour, DirectionalBehaviour
 
-BEHAVIOR_MAP = {
-    "flocking": FlockingBehavior,
-    "directional": DirectionalBehavior,
+BEHAVIOUR_MAP = {
+    "flocking": FlockingBehaviour,
+    "directional": DirectionalBehaviour,
 }
 
 class Boid:
-    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), maxSpeed=5.0, behavior="flocking"):
+    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), maxSpeed=5.0, behaviour="flocking"):
         """
         Initialize a new Boid instance.
         """
@@ -25,7 +25,7 @@ class Boid:
 
         self.maxSpeed = maxSpeed
 
-        self.behavior = BEHAVIOR_MAP.get(behavior, FlockingBehavior)()
+        self.behaviour = BEHAVIOUR_MAP.get(behaviour, FlockingBehaviour)()
 
         self.surrounding = []
 
@@ -33,7 +33,7 @@ class Boid:
         """
         Update the state of the Boid.
         """
-        self.surrounding = self.behavior.updateSurrounding(self.location, boids)
+        self.surrounding = self.behaviour.updateSurrounding(self.location, boids)
         self.updateLocation()
         self.updateVelocity()
         
@@ -55,7 +55,7 @@ class Boid:
         """
         Update the velocity of the Boid based on surrounding Boids.
         """
-        self.velocity += self.behavior.apply(self.surrounding, self.location, self.velocity)
+        self.velocity += self.behaviour.apply(self.surrounding, self.location, self.velocity)
         self.velocity = self.normalise(self.velocity)
     
     def normalise(self, vector):

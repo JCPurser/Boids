@@ -1,12 +1,12 @@
 import numpy as np
 
-class BasicBehavior:
+class BasicBehaviour:
     """
-    Base class for defining boid behaviors.
+    Base class for defining boid behaviours.
     """
     def __init__(self, vector_weights=[2.0, 1.0, 1.0]):
         """
-        Sets the weights for the three behaviors: collision avoidance, velocity matching, and flock centering.
+        Sets the weights for the three behaviours: collision avoidance, velocity matching, and flock centering.
         """
         self.vector_weights = vector_weights
 
@@ -57,9 +57,9 @@ class BasicBehavior:
         """
         return [boid for boid in boids if boid != self and self.get_distance(location, boid) < radius]
 
-class FlockingBehavior(BasicBehavior):
+class FlockingBehaviour(BasicBehaviour):
     """
-    Standard flocking behavior: cohesion, alignment, and separation.
+    Standard flocking behaviour: cohesion, alignment, and separation.
     """
     def apply(self, surrounding, location, velocity):
         """
@@ -75,7 +75,7 @@ class FlockingBehavior(BasicBehavior):
             self.vector_weights[2] * flock_centering
         )
 
-class DirectionalBehavior(BasicBehavior):
+class DirectionalBehaviour(BasicBehaviour):
     """
     Surrounding boids are only those within a certain angle of the boid's direction.
     """

@@ -1,7 +1,7 @@
 # Boids Simulation
 
 ## Overview
-This project implements a **Boids Simulation**, a simple agent-based model for simulating flocking behavior as set out by **C. Reynolds** in the 1987 paper **Flocks, Herds, and Schools: A Distributed Behavioral Model** pubsihed in _Computer Graphics_. The simulation uses **Pygame** for rendering and **NumPy** for vector calculations.
+This project implements a **Boids Simulation**, a simple agent-based model for simulating flocking behavior as set out by **C. Reynolds** in the 1987 paper **Flocks, Herds, and Schools: A Distributed Behavioral Model** as published in _Computer Graphics_. The simulation uses **Pygame** for rendering and **NumPy** for vector calculations.
 
 ## Features
 - **Flocking Behavior**: Implements **collision avoidance, velocity matching, and flock centering**.

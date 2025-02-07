@@ -75,26 +75,11 @@ class FlockingBehaviour(BasicBehaviour):
             self.vector_weights[2] * flock_centering
         )
 
-class DirectionalBehaviour(BasicBehaviour):
+class DirectionalBehaviour(FlockingBehaviour):
     """
     Surrounding boids are only those within a certain angle of the boid's direction.
-    """
-    def apply(self, surrounding, location, velocity):
-        """
-        Apply the three rules of flocking.
-        """
-        collision_avoidance = self.collision_avoidance(surrounding, location)
-        velocity_matching = self.velocity_matching(surrounding, velocity)
-        flock_centering = self.flock_centering(surrounding, location)
-        
-        return (
-            self.vector_weights[0] * collision_avoidance +
-            self.vector_weights[1] * velocity_matching +
-            self.vector_weights[2] * flock_centering
-        )
-    
+  """  
     def updateSurrounding(self, location, boids, radius=100):
-
         """
         Change this so that there is a restricted fov to 300 degrees and increased detection distance ahead proportional to speed.
         """
@@ -109,3 +94,13 @@ class NonFlockingBehaviour(BasicBehaviour):
         Returns an empty vector.
         """
         return (0, 0)
+
+class OmniscientBehaviour(FlockingBehaviour):
+    """
+    Omniscient behaviour: Boids know the location of all other boids.
+    """
+    def updateSurrounding(self, location, boids):
+        """
+        Returns all boids.
+        """
+        return [boid for boid in boids if boid != self]

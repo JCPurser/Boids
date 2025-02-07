@@ -1,6 +1,6 @@
 from boid import Boid
 import numpy as np
-from boidBehaviour import FlockingBehaviour, DirectionalBehaviour, NonFlockingBehaviour
+from boidBehaviour import FlockingBehaviour, DirectionalBehaviour, NonFlockingBehaviour, OmniscientBehaviour
 
 """
 Behavior map for flocking behaviors. Vector weights can be set here
@@ -9,6 +9,7 @@ BEHAVIOUR_MAP = {
     "flocking": FlockingBehaviour,
     "directional":  DirectionalBehaviour,
     "non-flocking": NonFlockingBehaviour,
+    "omniscient":   OmniscientBehaviour,
 }
 class Flock:
     def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):

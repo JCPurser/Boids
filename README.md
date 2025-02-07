@@ -45,9 +45,10 @@ python sky.py
 ## Controls
 - **Press 'E'** to exit the simulation.
 
-## To Do
+## ToDo
 **-**Populate templates in boidBehaviour.py.
 **-**Add in greater UI interactability.
 **-**Integrate collaboration.
 **-**Allow 0 to control all flocks simultainiously.
 **-**Add maximum limit of 9 flocks.
+**-**Make README look decent.

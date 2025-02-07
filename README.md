@@ -8,6 +8,10 @@ This project implements a **Boids Simulation**, a simple agent-based model for s
 - **Wall Avoidance**: Boids bounce off screen edges.
 - **Random Initialization**: Boids start with randomized positions and velocities centered around the middle of the screen.
 - **Behaviour Customisation**: Boid behaviour can be set at the flock level from provided rulesets.
+    -Basic Flocking: As set out in the 1987 paper.
+    -Non-Flocking: No motion, as a control.
+    -Directional Flocking: Additional flocking rules implemented for surrounding boid detection to be modified as suggested in 1987 paper.
+    -Omniscient Flocking: Flocking rules but with each boid knowing every boid location.
 
 ## Installation
 ### Prerequisites

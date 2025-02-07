@@ -52,3 +52,4 @@ python sky.py
 **-**Allow 0 to control all flocks simultainiously.
 **-**Add maximum limit of 9 flocks.
 **-**Make README look decent.
+**-**Make speed a property of boid behaviour.

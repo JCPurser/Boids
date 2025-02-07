@@ -1,13 +1,19 @@
 import numpy as np
 
 class BasicBehavior:
-    """Base class for defining boid behaviors."""
-
+    """
+    Base class for defining boid behaviors.
+    """
     def __init__(self, vector_weights=[2.0, 1.0, 1.0]):
+        """
+        Sets the weights for the three behaviors: collision avoidance, velocity matching, and flock centering.
+        """
         self.vector_weights = vector_weights
 
     def apply(self):
-        """Each subclass should implement its own movement rules."""
+        """
+        Each subclass should implement its own movement rules.
+        """
         raise NotImplementedError
     
     def collision_avoidance(self, surrounding, location, min_distance=50):
@@ -45,9 +51,20 @@ class BasicBehavior:
         """
         return np.linalg.norm(location - boid.location)
 
+    def updateSurrounding(self, location, boids, radius=100):
+        """
+        Update the list of Boids surrounding this Boid.
+        """
+        return [boid for boid in boids if boid != self and self.get_distance(location, boid) < radius]
+
 class FlockingBehavior(BasicBehavior):
-    """Standard flocking behavior: cohesion, alignment, and separation."""
+    """
+    Standard flocking behavior: cohesion, alignment, and separation.
+    """
     def apply(self, surrounding, location, velocity):
+        """
+        Apply the three rules of flocking.
+        """
         collision_avoidance = self.collision_avoidance(surrounding, location)
         velocity_matching = self.velocity_matching(surrounding, velocity)
         flock_centering = self.flock_centering(surrounding, location)
@@ -58,22 +75,26 @@ class FlockingBehavior(BasicBehavior):
             self.vector_weights[2] * flock_centering
         )
 
-class ChaoticBehavior(BasicBehavior):
-    """Chaotic movement: randomized movement in all directions."""
-    def apply(self, boid):
-        return np.random.uniform(-1, 1, 2) * 3  # More erratic movement
-
-class SwarmingBehavior(BasicBehavior):
-    """Boids aggressively move toward nearby boids (strong cohesion)."""
-    def apply(self, boid):
-        return boid.flock_centering() * 2.0  # Amplify cohesion force
-
-class AvoidantBehavior(BasicBehavior):
-    """Boids strongly avoid others, leading to more dispersed movement."""
-    def apply(self, boid):
-        return boid.collision_avoidance() * 3.0  # Amplify avoidance force
-
-class CuriousBehavior(BasicBehavior):
-    """Boids seek out other groups instead of avoiding them."""
-    def apply(self, boid):
-        return -boid.collision_avoidance() * 1.5  # Inverse avoidance for curiosity
+class DirectionalBehavior(BasicBehavior):
+    """
+    Surrounding boids are only those within a certain angle of the boid's direction.
+    """
+    def apply(self, surrounding, location, velocity):
+        """
+        Apply the three rules of flocking.
+        """
+        collision_avoidance = self.collision_avoidance(surrounding, location)
+        velocity_matching = self.velocity_matching(surrounding, velocity)
+        flock_centering = self.flock_centering(surrounding, location)
+        
+        return (
+            self.vector_weights[0] * collision_avoidance +
+            self.vector_weights[1] * velocity_matching +
+            self.vector_weights[2] * flock_centering
+        )
+    
+    def updateSurrounding(self, location, boids, radius=100):
+        """
+        Change this so that there is a restricted fov to 300 degrees and increased detection distance ahead proportional to speed.
+        """
+        return [boid for boid in boids if boid != self and self.get_distance(location, boid) < radius]

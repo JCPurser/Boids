@@ -4,7 +4,7 @@ from boid import Boid
 import numpy as np
 
 class Flock:
-    def __init__(self, name, size=100, colour=(0, 255, 0), surface=None):
+    def __init__(self, name, surface, size=100, colour=(0, 255, 0)):
         """
         Initialize a flock of Boids.
         """
@@ -12,23 +12,19 @@ class Flock:
         self.size = size
         self.colour = colour
         self.surface = surface
-
-        if surface:
-            self.screen_width, self.screen_height = surface.get_size()
-        else:
-            self.screen_width, self.screen_height = 1300, 700
         
-        locations = self.random_location(size)
-        self.boids = [Boid(boid, self.name, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
+        locations = self.random_location()
+        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
 
-    def random_location(self, size):
+    def random_location(self):
         """
         Generate random locations for boids using a normal distribution around the screen center.
         """
-        center_x, center_y = self.screen_width // 2, self.screen_height // 2
-        std_dev_x, std_dev_y = self.screen_width // 8, self.screen_height // 8
-        locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(size, 2))
-        locations = np.clip(locations, [0, 0], [self.screen_width, self.screen_height])
+        screen_width, screen_height = self.surface.get_size()
+        center_x, center_y = screen_width // 2, screen_height // 2
+        std_dev_x, std_dev_y = screen_width // 8, screen_height // 8
+        locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(self.size, 2))
+        locations = np.clip(locations, [0, 0], [screen_width, screen_height])
         return locations.tolist()
     
     def update(self, boids):
@@ -36,7 +32,7 @@ class Flock:
         Update the state of the flock.
         """
         for boid in self.boids:
-            boid.update(boids, self.surface)
+            boid.update(boids)
 
     def updateSurroundings(self, boids):
         """
@@ -45,9 +41,9 @@ class Flock:
         for boid in self.boids:
             boid.updateSurrounding(boids)
 
-    def draw(self, surface):
+    def draw(self):
         """
         Draw the flock to the provided drawing surface.
         """
         for boid in self.boids:
-            boid.draw(surface)
+            boid.draw()

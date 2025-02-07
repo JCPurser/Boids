@@ -2,52 +2,48 @@
 
 import pygame
 import numpy as np
-from boidBehaviour import FlockingBehavior, ChaoticBehavior, SwarmingBehavior, AvoidantBehavior, CuriousBehavior
+from boidBehaviour import FlockingBehavior, DirectionalBehavior
+
 BEHAVIOR_MAP = {
     "flocking": FlockingBehavior,
-    "chaotic": ChaoticBehavior,
-    "swarming": SwarmingBehavior,
-    "avoidant": AvoidantBehavior,
-    "curious": CuriousBehavior,
+    "directional": DirectionalBehavior,
 }
 
 class Boid:
-    def __init__(self, name, flock, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), vectorWeights=[2.0, 1.0, 1.0], maxSpeed=5.0, behavior="flocking"):
+    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), maxSpeed=5.0, behavior="flocking"):
         """
         Initialize a new Boid instance.
         """
         self.name = name
         self.flock = flock
+        self.surface = surface
+
         self.colour = colour
 
         self.location = np.array(location, dtype=np.float64)
         self.velocity = np.array(velocity, dtype=np.float64)
 
-        self.vectorWeights = vectorWeights
         self.maxSpeed = maxSpeed
 
         self.behavior = BEHAVIOR_MAP.get(behavior, FlockingBehavior)()
 
         self.surrounding = []
 
-    def update(self, boids, surface):
+    def update(self, boids):
         """
         Update the state of the Boid.
         """
-        self.updateSurrounding(boids)
-        self.updateLocation(surface)
+        self.surrounding = self.behavior.updateSurrounding(self.location, boids)
+        self.updateLocation()
         self.updateVelocity()
         
-    def updateLocation(self, surface=None):
+    def updateLocation(self):
         """
         Update the location of the Boid based on its current location and velocity.
         """ 
         self.location += self.velocity
 
-        if surface:
-            screen_width, screen_height = surface.get_size()
-        else:
-            screen_width, screen_height = 1300, 700
+        screen_width, screen_height = self.surface.get_size()
 
         # Reflect velocity if hitting walls
         if not (0 <= self.location[0] <= screen_width):
@@ -61,41 +57,6 @@ class Boid:
         """
         self.velocity += self.behavior.apply(self.surrounding, self.location, self.velocity)
         self.velocity = self.normalise(self.velocity)
-
-    def updateSurrounding(self, boids, radius=100):
-        """
-        Update the list of Boids surrounding this Boid.
-        """
-        self.surrounding = [boid for boid in boids if boid != self and self.get_distance(boid) < radius]
-   
-    def collision_avoidance(self, min_distance=50):
-        """
-        Avoid collisions with other boids.
-        """
-        vector = np.zeros(2, dtype=np.float64)
-        for boid in self.surrounding:
-            distance = self.get_distance(boid)
-            if 0 < distance < min_distance:
-                vector += (self.location - boid.location) / (distance ** 2)
-        return vector
-
-    def flock_centering(self, centering_weight=0.01):
-        """
-        Move towards the center of the flock.
-        """
-        if not self.surrounding:
-            return np.zeros(2, dtype=np.float64)
-        center_of_mass = np.mean([boid.location for boid in self.surrounding], axis=0)
-        return (center_of_mass - self.location) * centering_weight
-
-    def velocity_matching(self, matching_weight=0.05):
-        """
-        Match the velocity of the surrounding boids.
-        """
-        if not self.surrounding:
-            return np.zeros(2, dtype=np.float64)
-        avg_velocity = np.mean([boid.velocity for boid in self.surrounding], axis=0)
-        return (avg_velocity - self.velocity) * matching_weight
     
     def normalise(self, vector):
         """
@@ -112,7 +73,7 @@ class Boid:
         """
         return np.linalg.norm(self.location - boid.location)
 
-    def draw(self, surface):
+    def draw(self):
         """
         Draw the Boid oriented according to its velocity.
         """
@@ -134,4 +95,4 @@ class Boid:
 
         # Translate to boid's position
         translated_points = rotated_points + self.location
-        pygame.draw.polygon(surface, self.colour, translated_points.astype(int))
+        pygame.draw.polygon(self.surface, self.colour, translated_points.astype(int))

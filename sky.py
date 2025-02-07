@@ -75,19 +75,18 @@ class Sky:
                     elif event.key == pygame.K_d:
                         self.flocks[selected_flock].set_behaviour("directional")
                     elif event.key == pygame.K_n:
-                        self.flocks[selected_flock].set_behaviour("non-flocking")
+                        self.flocks[selected_flock].set_behaviour("stationary")
                     elif event.key == pygame.K_o:
                         self.flocks[selected_flock].set_behaviour("omniscient")
 
                     # Increase speed
                     elif event.key == pygame.K_UP:
-                        for boid in self.flocks[selected_flock].boids:
-                            boid.maxSpeed += 1.0
+                        self.flocks[selected_flock].behaviour.maxSpeed += 1.0
 
                     # Decrease speed
                     elif event.key == pygame.K_DOWN:
-                        for boid in self.flocks[selected_flock].boids:
-                            boid.maxSpeed = max(1.0, boid.maxSpeed - 1.0)
+                        self.flocks[selected_flock].behaviour.maxSpeed -= 1.0
+
 
                     # Quit simulation
                     elif event.key == pygame.K_q:

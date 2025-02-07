@@ -9,6 +9,7 @@ class BasicBehaviour:
         Sets the weights for the three behaviours: collision avoidance, velocity matching, and flock centering.
         """
         self.vector_weights = vector_weights
+        self.maxSpeed = 5.0
 
     def apply(self):
         """
@@ -67,12 +68,6 @@ class DirectionalFlocking(FlockingBehaviour):
     """
     Flocking behavior where awareness is limited to a forward-facing field of view.
     """
-    def __init__(self, vector_weights=[2.0, 1.0, 1.0]):
-        """
-        Sets the weights for the three behaviours: collision avoidance, velocity matching, and flock centering.
-        """
-        self.vector_weights = vector_weights
-    
     def apply(self, surrounding, location, velocity, base_view_distance=50, max_view_distance=200):
         """Apply flocking rules based only on boids in the directional field of view."""
         
@@ -122,7 +117,7 @@ class DirectionalFlocking(FlockingBehaviour):
 
         return filtered_boids
     
-class NonFlockingBehaviour(BasicBehaviour):
+class StationaryBehaviour(BasicBehaviour):
     """
     Non-flocking behaviour: Boids do not move.
     """

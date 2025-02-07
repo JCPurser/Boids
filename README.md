@@ -49,4 +49,4 @@ python sky.py
 - Add in greater UI interactability.
 - Integrate collaboration.
 - Allow 0 to control all flocks simultainiously.
-- Make speed a property of boid behaviour.
+- Permit greater ranges of speed.

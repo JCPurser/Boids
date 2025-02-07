@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 
 class Boid:
-    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), maxSpeed=5.0):
+    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
         """
         Initialize a new Boid instance.
         """
@@ -13,7 +13,6 @@ class Boid:
         self.colour = colour
         self.location = np.array(location, dtype=np.float64)
         self.velocity = np.array(velocity, dtype=np.float64)
-        self.maxSpeed = maxSpeed
 
         self.surrounding = []
 
@@ -44,16 +43,16 @@ class Boid:
         Update the velocity of the Boid based on the flock's behavior.
         """
         self.velocity += behaviour.apply(self.surrounding, self.location, self.velocity)
-        self.velocity = self.normalise(self.velocity)
+        self.velocity = self.normaliseVelocity(behaviour)
     
-    def normalise(self, vector):
+    def normaliseVelocity(self, behaviour):
         """
         Normalize a velocity vector to a fixed speed.
         """
-        magnitude = np.linalg.norm(vector)
+        magnitude = np.linalg.norm(self.velocity)
         if magnitude == 0:  # Prevent division by zero
             return np.zeros(2, dtype=np.float64)
-        return (vector / magnitude) * self.maxSpeed  
+        return (self.velocity / magnitude) * behaviour.maxSpeed
 
     def draw(self):
         """

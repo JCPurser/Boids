@@ -175,6 +175,33 @@ class EvasionFlocking(FlockingBehaviour):
 
 class CooperativeFlocking(FlockingBehaviour):
     """
-    Cooperative behaviour: Boids work together to achieve a common goal.
+    Cooperative behaviour: Boids work together to reproduce.
     """
-    pass
+    def draw(self, boid):
+        """
+        Draw the Boid oriented according to its velocity.
+        """
+        angle = np.arctan2(boid.velocity[1], boid.velocity[0])
+
+        length = 10
+        points = np.array([
+            [length, 0],
+            [-length * 0.5, length * 0.5],
+            [-length * 0.5, -length * 0.5]
+        ])
+
+        # Rotate points
+        rotation_matrix = np.array([
+            [np.cos(angle), -np.sin(angle)],
+            [np.sin(angle), np.cos(angle)]
+        ])
+        rotated_points = np.dot(points, rotation_matrix.T)
+
+        if boid.cooperation:
+            colour = (0, 255, 0)
+        else:
+            colour = (255, 0, 0)
+
+        # Translate to boid's position
+        translated_points = rotated_points + boid.location
+        pygame.draw.polygon(boid.surface, colour, translated_points.astype(int))

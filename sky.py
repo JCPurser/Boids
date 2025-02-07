@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import pygame
-import pygame_gui
 from flock import Flock
 import numpy as np
 
@@ -17,8 +16,8 @@ class Sky:
         self.font = pygame.font.Font(None, 24)
 
         self.flocks = []
-        self.flocks.append(Flock(0, self.surface, 0.0, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
-        self.flocks.append(Flock(1, self.surface, 1.0, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
+        self.flocks.append(Flock(0, self.surface, 1.0, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
+        self.flocks.append(Flock(1, self.surface, 0.75, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
 
         if len(self.flocks) > 9 :
             print("Numeber of flocks should be less than 10")
@@ -77,6 +76,12 @@ class Sky:
                         self.apply_to_flocks(selected_flock, "set_behaviour", "stationary")
                     elif event.key == pygame.K_o:
                         self.apply_to_flocks(selected_flock, "set_behaviour", "omniscient")
+                    elif event.key == pygame.K_m:
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "migratory")
+                    elif event.key == pygame.K_e:
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "evasion")
+                    elif event.key == pygame.K_c:
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "cooperative")
 
                     elif event.key == pygame.K_UP:
                         self.apply_to_flocks(selected_flock, "adjust_speed", amount=1.0)

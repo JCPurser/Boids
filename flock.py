@@ -1,6 +1,6 @@
 from boid import Boid
 import numpy as np
-from boidBehaviour import FlockingBehaviour, DirectionalFlocking, StationaryBehaviour, OmniscientFlocking
+from boidBehaviour import FlockingBehaviour, DirectionalFlocking, StationaryBehaviour, OmniscientFlocking, MigratoryFlocking, EvasionFlocking, CooperativeFlocking
 
 """
 Behavior map for flocking behaviors. Vector weights can be set here
@@ -10,6 +10,9 @@ BEHAVIOUR_MAP = {
     "directional":  DirectionalFlocking,
     "stationary": StationaryBehaviour,
     "omniscient":   OmniscientFlocking,
+    "migratory": MigratoryFlocking,
+    "evasion": EvasionFlocking,
+    "cooperative": CooperativeFlocking
 }
 class Flock:
     def __init__(self, name, surface, cooperation=0.5, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
@@ -22,7 +25,7 @@ class Flock:
 
         self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         locations = self.random_location(size)
-        num_cooperative = int(cooperation * size) - 1
+        num_cooperative = int(cooperation * size)
         
         self.boids = []
         for boid in range(size):

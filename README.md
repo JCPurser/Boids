@@ -13,6 +13,12 @@ This project implements a **Boids Simulation**, a simple agent-based model for s
     -Directional Flocking: Additional flocking rules implemented for surrounding boid detection to be modified as suggested in 1987 paper.
     -Omniscient Flocking: Flocking rules but with each boid knowing every boid location.
 
+## Simulation Control
+- **Numbers**: Select the flock to be altered.
+- **q**: Exit the simulation.
+- **f, n, d, o**: Flocking modes basic, non-flocking, directional, and omniscient respectivly.
+- **Up and Down**: Increase and decrease flock speed.
+
 ## Installation
 ### Prerequisites
 Ensure you have Python installed along with the required dependencies:
@@ -38,3 +44,10 @@ python sky.py
 
 ## Controls
 - **Press 'E'** to exit the simulation.
+
+## To Do
+-Populate templates in boidBehaviour.py.
+-Add in greater UI interactability.
+-Integrate collaboration.
+-Allow 0 to control all flocks simultainiously.
+-Add maximum limit of 9 flocks.

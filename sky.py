@@ -72,6 +72,8 @@ class Sky:
                         self.flocks[selected_flock].set_behaviour("directional")
                     elif event.key == pygame.K_n:
                         self.flocks[selected_flock].set_behaviour("non-flocking")
+                    elif event.key == pygame.K_o:
+                        self.flocks[selected_flock].set_behaviour("omniscient")
 
                     # Increase speed
                     elif event.key == pygame.K_UP:

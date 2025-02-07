@@ -15,7 +15,7 @@ class Sky:
         
         self.flocks = []
         self.flocks.append(Flock(0, size=50, surface=self.surface, colour=(0, 255, 0), behaviour="flocking"))
-        self.flocks.append(Flock(1, size=50, surface=self.surface, colour=(255, 0, 0), behaviour="non-flocking"))
+        self.flocks.append(Flock(1, size=50, surface=self.surface, colour=(255, 0, 0), behaviour="flocking"))
 
         self.boids = [boid for flock in self.flocks for boid in flock.boids]
 

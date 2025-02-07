@@ -1,8 +1,15 @@
-#!/usr/bin/env python3
-
 from boid import Boid
 import numpy as np
+from boidBehaviour import FlockingBehaviour, DirectionalBehaviour, NonFlockingBehaviour
 
+"""
+Behavior map for flocking behaviors. Vector weights can be set here
+"""
+BEHAVIOUR_MAP = {
+    "flocking": FlockingBehaviour,
+    "directional":  DirectionalBehaviour,
+    "non-flocking": NonFlockingBehaviour,
+}
 class Flock:
     def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking"):
         """
@@ -12,9 +19,17 @@ class Flock:
         self.size = size
         self.colour = colour
         self.surface = surface
+        self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         
         locations = self.random_location()
-        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid], behaviour=behaviour) for boid in range(self.size)]
+        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
+
+    def set_behaviour(self, behaviour):
+        """
+        Change behavior for the entire flock dynamically.
+        """
+        if behaviour in BEHAVIOUR_MAP:
+            self.behaviour = BEHAVIOUR_MAP[behaviour]()
 
     def random_location(self):
         """
@@ -32,14 +47,7 @@ class Flock:
         Update the state of the flock.
         """
         for boid in self.boids:
-            boid.update(boids)
-
-    def updateSurroundings(self, boids):
-        """
-        Update the surroundings of each boid in the flock.
-        """
-        for boid in self.boids:
-            boid.updateSurrounding(boids)
+            boid.update(self.behaviour, boids)
 
     def draw(self):
         """

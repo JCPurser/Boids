@@ -102,7 +102,7 @@ class DirectionalBehaviour(BasicBehaviour):
     
 class NonFlockingBehaviour(BasicBehaviour):
     """
-    Non-flocking behaviour: boids do not move.
+    Non-flocking behaviour: Boids do not move.
     """
     def apply(self, surrounding, location, velocity):
         """

@@ -17,8 +17,8 @@ class Sky:
         self.font = pygame.font.Font(None, 24)
 
         self.flocks = []
-        self.flocks.append(Flock(0, self.surface, True, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
-        self.flocks.append(Flock(1, self.surface, True, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
+        self.flocks.append(Flock(0, self.surface, 0.0, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
+        self.flocks.append(Flock(1, self.surface, 1.0, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
 
         if len(self.flocks) > 9 :
             print("Numeber of flocks should be less than 10")

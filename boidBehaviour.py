@@ -1,5 +1,5 @@
 import numpy as np
-
+import pygame
 class BasicBehaviour:
     """
     Base class for defining boid behaviours.
@@ -45,6 +45,30 @@ class BasicBehaviour:
         Update the list of Boids surrounding this Boid.
         """
         return [boid for boid in boids if boid != self and np.linalg.norm(location - boid.location) < radius]
+
+    def draw(self, boid):
+        """
+        Draw the Boid oriented according to its velocity.
+        """
+        angle = np.arctan2(boid.velocity[1], boid.velocity[0])
+
+        length = 10
+        points = np.array([
+            [length, 0],
+            [-length * 0.5, length * 0.5],
+            [-length * 0.5, -length * 0.5]
+        ])
+
+        # Rotate points
+        rotation_matrix = np.array([
+            [np.cos(angle), -np.sin(angle)],
+            [np.sin(angle), np.cos(angle)]
+        ])
+        rotated_points = np.dot(points, rotation_matrix.T)
+
+        # Translate to boid's position
+        translated_points = rotated_points + boid.location
+        pygame.draw.polygon(boid.surface, boid.colour, translated_points.astype(int))
 
 class FlockingBehaviour(BasicBehaviour):
     """
@@ -146,5 +170,11 @@ class MigratoryFlocking(FlockingBehaviour):
 class EvasionFlocking(FlockingBehaviour):
     """
     Evasion behaviour: Boids attempt to avoid obstacles.
+    """
+    pass
+
+class CooperativeFlocking(FlockingBehaviour):
+    """
+    Cooperative behaviour: Boids work together to achieve a common goal.
     """
     pass

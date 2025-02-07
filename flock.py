@@ -12,18 +12,24 @@ BEHAVIOUR_MAP = {
     "omniscient":   OmniscientFlocking,
 }
 class Flock:
-    def __init__(self, name, surface, cooperation, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
+    def __init__(self, name, surface, cooperation=0.5, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
         """
         Initialize a flock of Boids.
         """
         self.name = name
-        self.size = size
         self.surface = surface
-        self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         self.interFlocking = interFlocking
 
-        locations = self.random_location()
-        self.boids = [Boid(boid, self.name, self.surface, cooperation, colour=colour, location=locations[boid]) for boid in range(self.size)]
+        self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
+        locations = self.random_location(size)
+        num_cooperative = int(cooperation * size) - 1
+        
+        self.boids = []
+        for boid in range(size):
+            if boid < num_cooperative:
+                self.boids.append(Boid(boid, self.name, self.surface, True, colour=colour, location=locations[boid]))
+            else:
+                self.boids.append(Boid(boid, self.name, self.surface, False, colour=colour, location=locations[boid]))
 
     def set_behaviour(self, behaviour):
         """
@@ -32,14 +38,14 @@ class Flock:
         if behaviour in BEHAVIOUR_MAP:
             self.behaviour = BEHAVIOUR_MAP[behaviour]()
 
-    def random_location(self):
+    def random_location(self, size):
         """
         Generate random locations for boids using a normal distribution around the screen center.
         """
         screen_width, screen_height = self.surface.get_size()
         center_x, center_y = screen_width // 2, screen_height // 2
         std_dev_x, std_dev_y = screen_width // 8, screen_height // 8
-        locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(self.size, 2))
+        locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(size, 2))
         locations = np.clip(locations, [0, 0], [screen_width, screen_height])
         return locations.tolist()
     
@@ -59,7 +65,7 @@ class Flock:
         Draw the flock to the provided drawing surface.
         """
         for boid in self.boids:
-            boid.draw()
+            self.behaviour.draw(boid)
 
     def adjust_speed(self, amount):
             """

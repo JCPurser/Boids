@@ -54,27 +54,3 @@ class Boid:
         if magnitude == 0:  # Prevent division by zero
             return np.zeros(2, dtype=np.float64)
         return (self.velocity / magnitude) * behaviour.maxSpeed
-
-    def draw(self):
-        """
-        Draw the Boid oriented according to its velocity.
-        """
-        angle = np.arctan2(self.velocity[1], self.velocity[0])
-
-        length = 10
-        points = np.array([
-            [length, 0],
-            [-length * 0.5, length * 0.5],
-            [-length * 0.5, -length * 0.5]
-        ])
-
-        # Rotate points
-        rotation_matrix = np.array([
-            [np.cos(angle), -np.sin(angle)],
-            [np.sin(angle), np.cos(angle)]
-        ])
-        rotated_points = np.dot(points, rotation_matrix.T)
-
-        # Translate to boid's position
-        translated_points = rotated_points + self.location
-        pygame.draw.polygon(self.surface, self.colour, translated_points.astype(int))

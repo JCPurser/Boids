@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pygame
+import pygame_gui
 from flock import Flock
 import numpy as np
 
@@ -65,38 +66,48 @@ class Sky:
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    # Switch flock selection (1-9 keys)
-                    if pygame.K_1 <= event.key <= pygame.K_9:
-                        selected_flock = event.key - pygame.K_1
+                    if pygame.K_0 <= event.key <= pygame.K_9:
+                        selected_flock = event.key - pygame.K_0
 
-                    # Change behavior (F for flocking, D for directional, N for non-flocking)
                     if event.key == pygame.K_f:
-                        self.flocks[selected_flock].set_behaviour("flocking")
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "flocking")
                     elif event.key == pygame.K_d:
-                        self.flocks[selected_flock].set_behaviour("directional")
-                    elif event.key == pygame.K_n:
-                        self.flocks[selected_flock].set_behaviour("stationary")
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "directional")
+                    elif event.key == pygame.K_s:
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "stationary")
                     elif event.key == pygame.K_o:
-                        self.flocks[selected_flock].set_behaviour("omniscient")
+                        self.apply_to_flocks(selected_flock, "set_behaviour", "omniscient")
 
-                    # Increase speed
                     elif event.key == pygame.K_UP:
-                        self.flocks[selected_flock].behaviour.maxSpeed += 1.0
+                        self.apply_to_flocks(selected_flock, "adjust_speed", amount=1.0)
 
-                    # Decrease speed
                     elif event.key == pygame.K_DOWN:
-                        self.flocks[selected_flock].behaviour.maxSpeed -= 1.0
+                        self.apply_to_flocks(selected_flock, "adjust_speed", amount=-1.0)
 
-
-                    # Quit simulation
                     elif event.key == pygame.K_q:
                         running = False
+
 
             self.update()
             self.draw()
             self.clock.tick(fps)
 
         pygame.quit()
+
+    def apply_to_flocks(self, flock_index, action, *args, **kwargs):
+        """
+        Apply an action (method) to either all flocks (if flock_index == 0)
+        or just the selected flock.
+        
+        :param flock_index: 0 for all flocks, otherwise the specific flock number (1-9)
+        :param action: The method name to call on each flock
+        :param *args, **kwargs: Any arguments to pass to the method
+        """
+        if flock_index == 0:
+            for flock in self.flocks:
+                getattr(flock, action)(*args, **kwargs)
+        elif 1 <= flock_index <= len(self.flocks):
+            getattr(self.flocks[flock_index - 1], action)(*args, **kwargs)
 
 """
 Creates an instance of Sky and runs the simulation.

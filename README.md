@@ -48,5 +48,4 @@ python sky.py
 - Populate templates in boidBehaviour.py.
 - Add in greater UI interactability.
 - Integrate collaboration.
-- Allow 0 to control all flocks simultainiously.
-- Permit greater ranges of speed.
+- Permit greater ranges of speed, prevent renormalising to 5.

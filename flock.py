@@ -61,3 +61,9 @@ class Flock:
         """
         for boid in self.boids:
             boid.draw()
+
+    def adjust_speed(self, amount):
+            """
+            Increase or decrease the speed of all boids in the flock.
+            """
+            self.behaviour.maxSpeed += amount

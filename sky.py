@@ -17,8 +17,8 @@ class Sky:
         self.font = pygame.font.Font(None, 24)
 
         self.flocks = []
-        self.flocks.append(Flock(0, size=50, surface=self.surface, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
-        self.flocks.append(Flock(1, size=50, surface=self.surface, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
+        self.flocks.append(Flock(0, self.surface, True, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
+        self.flocks.append(Flock(1, self.surface, True, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=False))
 
         if len(self.flocks) > 9 :
             print("Numeber of flocks should be less than 10")
@@ -53,7 +53,7 @@ class Sky:
         y_offset = 10
         for i, flock in enumerate(self.flocks):
             avg_speed = sum(np.linalg.norm(boid.velocity) for boid in flock.boids) / len(flock.boids)
-            text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.behaviour.__class__.__name__}"
+            text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.behaviour.__class__.__name__} | Interflocking: {flock.interFlocking}"
             text_surface = self.font.render(text, True, (0, 0, 0))
             self.surface.blit(text_surface, (10, y_offset))
             y_offset += 20
@@ -87,6 +87,8 @@ class Sky:
                     elif event.key == pygame.K_q:
                         running = False
 
+                    elif event.key == pygame.K_i:
+                        self.apply_to_flocks(selected_flock, "interflocking")
 
             self.update()
             self.draw()

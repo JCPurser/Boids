@@ -48,4 +48,8 @@ python sky.py
 - Populate templates in boidBehaviour.py.
 - Add in greater UI interactability.
 - Integrate collaboration.
+    - Add in Cooperators and Defectors.
+    - Add some repoduction metric.
+    - Add in some cost to reproduction.
+    - Consider, everytime two meet they undergo some resource interaction depending on C/D. See how ratio of C/D boids change over time.
 - Permit greater ranges of speed, prevent renormalising to 5.

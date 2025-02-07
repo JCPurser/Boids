@@ -2,13 +2,14 @@ import pygame
 import numpy as np
 
 class Boid:
-    def __init__(self, name, flock, surface, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
+    def __init__(self, name, flock, surface, cooperation, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
         """
         Initialize a new Boid instance.
         """
         self.name = name
         self.flock = flock
         self.surface = surface
+        self.cooperation = cooperation
 
         self.colour = colour
         self.location = np.array(location, dtype=np.float64)

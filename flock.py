@@ -12,19 +12,18 @@ BEHAVIOUR_MAP = {
     "omniscient":   OmniscientFlocking,
 }
 class Flock:
-    def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
+    def __init__(self, name, surface, cooperation, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
         """
         Initialize a flock of Boids.
         """
         self.name = name
         self.size = size
-        self.colour = colour
         self.surface = surface
         self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         self.interFlocking = interFlocking
 
         locations = self.random_location()
-        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
+        self.boids = [Boid(boid, self.name, self.surface, cooperation, colour=colour, location=locations[boid]) for boid in range(self.size)]
 
     def set_behaviour(self, behaviour):
         """
@@ -67,3 +66,9 @@ class Flock:
             Increase or decrease the speed of all boids in the flock.
             """
             self.behaviour.maxSpeed += amount
+
+    def interflocking(self):
+        """
+        Toggle inter-flocking behavior.
+        """
+        self.interFlocking = not self.interFlocking

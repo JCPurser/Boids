@@ -36,7 +36,7 @@ class Flock:
         Update the state of the flock.
         """
         for boid in self.boids:
-            boid.update(boids)
+            boid.update(boids, self.surface)
 
     def updateSurroundings(self, boids):
         """

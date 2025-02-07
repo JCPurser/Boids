@@ -9,7 +9,7 @@ class Sky:
         Initialize a new Sky instance with flocks.
         """
         pygame.init()
-        self.surface = pygame.display.set_mode((width, height))
+        self.surface = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
         pygame.display.set_caption("Boids Simulation")
         self.clock = pygame.time.Clock()
         

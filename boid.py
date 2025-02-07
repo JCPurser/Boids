@@ -15,24 +15,29 @@ class Boid:
         self.velocity = np.zeros(2, dtype=np.float64)
         self.surrounding = []
     
-    def update(self, boids):
+    def update(self, boids, surface):
         """
         Update the state of the Boid.
         """
         self.updateSurrounding(boids)
-        self.updateLocation()
+        self.updateLocation(surface)
         self.updateVelocity()
         
-    def updateLocation(self, width=1300, height=700):
+    def updateLocation(self, surface=None):
         """
         Update the location of the Boid based on its current location and velocity.
         """ 
         self.location += self.velocity
-        
+
+        if surface:
+            screen_width, screen_height = surface.get_size()
+        else:
+            screen_width, screen_height = 1300, 700
+
         # Reflect velocity if hitting walls
-        if not (0 <= self.location[0] <= width):
+        if not (0 <= self.location[0] <= screen_width):
             self.velocity[0] *= -1
-        if not (0 <= self.location[1] <= height):
+        if not (0 <= self.location[1] <= screen_height):
             self.velocity[1] *= -1
     
     def updateVelocity(self, vectorWeights=[2.0, 1.0, 1.0]):
@@ -103,12 +108,24 @@ class Boid:
 
     def draw(self, surface):
         """
-        Draw the Boid to the provided drawing surface.
+        Draw the Boid oriented according to its velocity.
         """
-        x, y = self.location.astype(int)
-        corners = np.array([
-            [x, y - 5],
-            [x + 5, y + 5],
-            [x - 5, y + 5]
+        angle = np.arctan2(self.velocity[1], self.velocity[0])
+
+        length = 10
+        points = np.array([
+            [length, 0],
+            [-length * 0.5, length * 0.5],
+            [-length * 0.5, -length * 0.5]
         ])
-        pygame.draw.polygon(surface, self.colour, corners)
+
+        # Rotate points
+        rotation_matrix = np.array([
+            [np.cos(angle), -np.sin(angle)],
+            [np.sin(angle), np.cos(angle)]
+        ])
+        rotated_points = np.dot(points, rotation_matrix.T)
+
+        # Translate to boid's position
+        translated_points = rotated_points + self.location
+        pygame.draw.polygon(surface, self.colour, translated_points.astype(int))

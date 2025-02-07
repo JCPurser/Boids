@@ -2,19 +2,34 @@
 
 import pygame
 import numpy as np
+from boidBehaviour import FlockingBehavior, ChaoticBehavior, SwarmingBehavior, AvoidantBehavior, CuriousBehavior
+BEHAVIOR_MAP = {
+    "flocking": FlockingBehavior,
+    "chaotic": ChaoticBehavior,
+    "swarming": SwarmingBehavior,
+    "avoidant": AvoidantBehavior,
+    "curious": CuriousBehavior,
+}
 
 class Boid:
-    def __init__(self, name, flock, location=(0, 0), colour=(0, 255, 0)):
+    def __init__(self, name, flock, colour=(0, 255, 0), location=(0, 0), velocity=(0,0), vectorWeights=[2.0, 1.0, 1.0], maxSpeed=5.0, behavior="flocking"):
         """
         Initialize a new Boid instance.
         """
         self.name = name
         self.flock = flock
-        self.location = np.array(location, dtype=np.float64)
         self.colour = colour
-        self.velocity = np.zeros(2, dtype=np.float64)
+
+        self.location = np.array(location, dtype=np.float64)
+        self.velocity = np.array(velocity, dtype=np.float64)
+
+        self.vectorWeights = vectorWeights
+        self.maxSpeed = maxSpeed
+
+        self.behavior = BEHAVIOR_MAP.get(behavior, FlockingBehavior)()
+
         self.surrounding = []
-    
+
     def update(self, boids, surface):
         """
         Update the state of the Boid.
@@ -40,20 +55,11 @@ class Boid:
         if not (0 <= self.location[1] <= screen_height):
             self.velocity[1] *= -1
     
-    def updateVelocity(self, vectorWeights=[2.0, 1.0, 1.0]):
+    def updateVelocity(self):
         """
         Update the velocity of the Boid based on surrounding Boids.
         """
-        collisionAvoidanceVector = self.collision_avoidance()
-        velocityMatchingVector = self.velocity_matching()
-        flockCenteringVector = self.flock_centering()
-
-        self.velocity += (
-            vectorWeights[0] * collisionAvoidanceVector +
-            vectorWeights[1] * velocityMatchingVector +
-            vectorWeights[2] * flockCenteringVector
-        )
-
+        self.velocity += self.behavior.apply(self.surrounding, self.location, self.velocity)
         self.velocity = self.normalise(self.velocity)
 
     def updateSurrounding(self, boids, radius=100):
@@ -91,14 +97,14 @@ class Boid:
         avg_velocity = np.mean([boid.velocity for boid in self.surrounding], axis=0)
         return (avg_velocity - self.velocity) * matching_weight
     
-    def normalise(self, vector, max_speed=5.0):
+    def normalise(self, vector):
         """
         Normalize a velocity vector to a fixed speed.
         """
         magnitude = np.linalg.norm(vector)
         if magnitude == 0:  # Prevent division by zero
             return np.zeros(2, dtype=np.float64)
-        return (vector / magnitude) * max_speed
+        return (vector / magnitude) * self.maxSpeed
   
     def get_distance(self, boid):
         """

@@ -141,3 +141,15 @@ class OmniscientFlocking(FlockingBehaviour):
         Returns all boids.
         """
         return [boid for boid in boids if boid != self]
+
+class MigratoryFlocking(FlockingBehaviour):
+    """
+    Migratory behaviour: Boids move towards a fixed location.
+    """
+    pass
+
+class EvasionFlocking(FlockingBehaviour):
+    """
+    Evasion behaviour: Boids attempt to avoid obstacles.
+    """
+    pass

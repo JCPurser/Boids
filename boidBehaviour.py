@@ -130,7 +130,7 @@ class NonFlockingBehaviour(BasicBehaviour):
         """
         Returns an empty vector.
         """
-        return (0, 0)
+        return velocity * -1
 
 class OmniscientFlocking(FlockingBehaviour):
     """

@@ -2,11 +2,12 @@
 
 import pygame
 import numpy as np
-from boidBehaviour import FlockingBehaviour, DirectionalBehaviour
+from boidBehaviour import FlockingBehaviour, DirectionalBehaviour, NonFlockingBehaviour
 
 BEHAVIOUR_MAP = {
     "flocking": FlockingBehaviour,
     "directional": DirectionalBehaviour,
+    "non-flocking": NonFlockingBehaviour
 }
 
 class Boid:

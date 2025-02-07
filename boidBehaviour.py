@@ -94,7 +94,18 @@ class DirectionalBehaviour(BasicBehaviour):
         )
     
     def updateSurrounding(self, location, boids, radius=100):
+
         """
         Change this so that there is a restricted fov to 300 degrees and increased detection distance ahead proportional to speed.
         """
         return [boid for boid in boids if boid != self and self.get_distance(location, boid) < radius]
+    
+class NonFlockingBehaviour(BasicBehaviour):
+    """
+    Non-flocking behaviour: boids do not move.
+    """
+    def apply(self, surrounding, location, velocity):
+        """
+        Returns an empty vector.
+        """
+        return (0, 0)

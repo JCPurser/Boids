@@ -4,7 +4,7 @@ from boid import Boid
 import numpy as np
 
 class Flock:
-    def __init__(self, name, surface, size=100, colour=(0, 255, 0)):
+    def __init__(self, name, surface, size=100, colour=(0, 255, 0), behaviour="flocking"):
         """
         Initialize a flock of Boids.
         """
@@ -14,7 +14,7 @@ class Flock:
         self.surface = surface
         
         locations = self.random_location()
-        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid]) for boid in range(self.size)]
+        self.boids = [Boid(boid, self.name, self.surface, colour=self.colour, location=locations[boid], behaviour=behaviour) for boid in range(self.size)]
 
     def random_location(self):
         """

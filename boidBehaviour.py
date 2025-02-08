@@ -103,6 +103,14 @@ class BasicBehaviour:
         Update the list of Boids surrounding this Boid.
         """
         return [boid for boid in boids if boid != self and np.linalg.norm(location - boid.location) < radius]
+    
+    def updateFood(self, surrounding):
+        """
+        Update the food level of the Boid.
+        """
+        
+        return np.random.randint(2)
+
 class FlockingBehaviour(BasicBehaviour):
     """
     Standard flocking behaviour: cohesion, alignment, and separation.
@@ -238,3 +246,9 @@ class CooperativeFlocking(FlockingBehaviour):
         # Translate to boid's position
         translated_points = rotated_points + boid.location
         pygame.draw.polygon(surface, colour, translated_points.astype(int))
+
+    def updateFood(self, surrounding):
+        """
+        Update the food level of the Boid. With sharing.
+        """
+        return 1

@@ -49,11 +49,11 @@ class Flock:
         """
         for boid in self.boids:
             
-            if boid.reproduction > 100:
+            if boid.food > 100:
                 self.boids.append(Boid(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
-                boid.reproduction = 0
+                boid.food = 0
             
-            if boid.age > 100:
+            if boid.age > 200:
                 self.boids.remove(boid)
             
             if self.interFlocking:

@@ -13,16 +13,16 @@ class Boid:
         self.velocity = np.array(velocity, dtype=np.float64)
 
         self.surrounding = []
-        self.reproduction = 0
+        self.food = 0
         self.age = 0
 
     def update(self, behaviour, boids, sky):
         """
         Update the state of the Boid using the flock's behavior.
         """
-        self.reproduction += 1
         self.age += 1
 
         self.surrounding = behaviour.updateSurrounding(self.location, boids)
         self.velocity = behaviour.updateVelocity(self.surrounding, self.location, self.velocity)
         self.location, self.velocity = behaviour.updateLocation(self.location, self.velocity, sky)
+        self.food += behaviour.updateFood(self.surrounding)

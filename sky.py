@@ -54,11 +54,14 @@ class Sky:
         """
         y_offset = 10
         for i, flock in enumerate(self.flocks):
-            avg_speed = sum(np.linalg.norm(boid.velocity) for boid in flock.boids) / len(flock.boids)
-            text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.behaviour.__class__.__name__} | Interflocking: {flock.interFlocking}"
+            if len(flock.boids) != 0:
+                avg_speed = sum(np.linalg.norm(boid.velocity) for boid in flock.boids) / len(flock.boids)
+                text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.behaviour.__class__.__name__} | Interflocking: {flock.interFlocking}"
+            else:
+                text = f"Flock {i}: Dead"
             text_surface = self.font.render(text, True, (0, 0, 0))
             self.surface.blit(text_surface, (10, y_offset))
-            y_offset += 20
+            y_offset += 20                
 
     def run_simulation(self, fps=30):
         """Run the simulation with dynamic user input."""

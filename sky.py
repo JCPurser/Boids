@@ -11,13 +11,14 @@ class Sky:
         """
         pygame.init()
         self.surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        dimensions = self.surface.get_size()
         pygame.display.set_caption("Boids Simulation")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 24)
 
         self.flocks = []
-        self.flocks.append(Flock(0, self.surface, 1.0, size=50, colour=(0, 255, 0), behaviour="directional", interFlocking=True))
-        self.flocks.append(Flock(1, self.surface, 0.75, size=50, colour=(255, 0, 0), behaviour="directional", interFlocking=True))
+        self.flocks.append(Flock(dimensions, coop=1.0, size=50, colour=(0, 255, 0)))
+        self.flocks.append(Flock(dimensions, coop=0.75, size=50, colour=(255, 0, 0)))
 
         if len(self.flocks) > 9 :
             print("Numeber of flocks should be less than 10")
@@ -30,7 +31,9 @@ class Sky:
         Update each flock in the sky.
         """
         for flock in self.flocks:
-            flock.update(self.boids)
+            flock.update(self.boids, self.surface.get_size())
+
+        self.boids = [boid for flock in self.flocks for boid in flock.boids]
 
     def draw(self):
         """
@@ -39,7 +42,7 @@ class Sky:
         self.surface.fill((255, 255, 255))
 
         for flock in self.flocks:
-            flock.draw()
+            flock.draw(self.surface)
         
         self.draw_ui()
 
@@ -93,7 +96,7 @@ class Sky:
                         running = False
 
                     elif event.key == pygame.K_i:
-                        self.apply_to_flocks(selected_flock, "interflocking")
+                        self.apply_to_flocks(selected_flock, "toggle_interflocking")
 
             self.update()
             self.draw()

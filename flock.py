@@ -15,44 +15,35 @@ BEHAVIOUR_MAP = {
     "cooperative": CooperativeFlocking
 }
 class Flock:
-    def __init__(self, name, surface, cooperation=0.5, size=100, colour=(0, 255, 0), behaviour="flocking", interFlocking=True):
+    def __init__(self, sky, coop=0.5, size=100, colour=(0, 255, 0), behaviour="directional", interFlocking=True):
         """
         Initialize a flock of Boids.
         """
-        self.name = name
-        self.surface = surface
         self.interFlocking = interFlocking
 
         self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
-        locations = self.random_location(size)
-        num_cooperative = int(cooperation * size)
+        locations = self.random_location(sky, size)
+        num_cooperative = int(coop * size)
         
         self.boids = []
         for boid in range(size):
             if boid < num_cooperative:
-                self.boids.append(Boid(self.surface, True, colour=colour, location=locations[boid]))
+                self.boids.append(Boid(coop=True, colour=colour, location=locations[boid]))
             else:
-                self.boids.append(Boid(self.surface, False, colour=colour, location=locations[boid]))
+                self.boids.append(Boid(coop=False, colour=colour, location=locations[boid]))
 
-    def set_behaviour(self, behaviour):
-        """
-        Change behavior for the entire flock dynamically.
-        """
-        if behaviour in BEHAVIOUR_MAP:
-            self.behaviour = BEHAVIOUR_MAP[behaviour]()
-
-    def random_location(self, size):
+    def random_location(self, sky, size):
         """
         Generate random locations for boids using a normal distribution around the screen center.
         """
-        screen_width, screen_height = self.surface.get_size()
+        screen_width, screen_height = sky
         center_x, center_y = screen_width // 2, screen_height // 2
         std_dev_x, std_dev_y = screen_width // 8, screen_height // 8
         locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(size, 2))
         locations = np.clip(locations, [0, 0], [screen_width, screen_height])
         return locations.tolist()
     
-    def update(self, boids):
+    def update(self, boids, sky):
         """
         Update the state of the flock.
         """
@@ -66,16 +57,16 @@ class Flock:
                 self.boids.remove(boid)
             """
             if self.interFlocking:
-                    boid.update(self.behaviour, boids)
+                    boid.update(self.behaviour, boids, sky)
             else:
-                    boid.update(self.behaviour, self.boids)
+                    boid.update(self.behaviour, self.boids, sky)
 
-    def draw(self):
+    def draw(self, surface):
         """
         Draw the flock to the provided drawing surface.
         """
         for boid in self.boids:
-            self.behaviour.draw(boid)
+            self.behaviour.draw(boid, surface)
 
     def adjust_speed(self, amount):
             """
@@ -83,7 +74,14 @@ class Flock:
             """
             self.behaviour.maxSpeed += amount
 
-    def interflocking(self):
+    def set_behaviour(self, behaviour):
+        """
+        Change behavior for the entire flock dynamically.
+        """
+        if behaviour in BEHAVIOUR_MAP:
+            self.behaviour = BEHAVIOUR_MAP[behaviour]()
+
+    def toggle_interflocking(self):
         """
         Toggle inter-flocking behavior.
         """

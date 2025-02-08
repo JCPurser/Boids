@@ -26,6 +26,13 @@ class BasicBehaviour:
                 vector += (location - boid.location) / (distance ** 2)
         return vector
 
+    def velocity_matching(self, surrounding, velocity, matching_weight=0.05):
+        """Match the velocity of the visible boids."""
+        if not surrounding:
+            return np.zeros(2, dtype=np.float64)
+        avg_velocity = np.mean([boid.velocity for boid in surrounding], axis=0)
+        return (avg_velocity - velocity) * matching_weight
+    
     def flock_centering(self, surrounding, location, centering_weight=0.01):
         """Move towards the center of the visible flock."""
         if not surrounding:
@@ -33,20 +40,7 @@ class BasicBehaviour:
         center_of_mass = np.mean([boid.location for boid in surrounding], axis=0)
         return (center_of_mass - location) * centering_weight
 
-    def velocity_matching(self, surrounding, velocity, matching_weight=0.05):
-        """Match the velocity of the visible boids."""
-        if not surrounding:
-            return np.zeros(2, dtype=np.float64)
-        avg_velocity = np.mean([boid.velocity for boid in surrounding], axis=0)
-        return (avg_velocity - velocity) * matching_weight
-
-    def updateSurrounding(self, location, boids, radius=100):
-        """
-        Update the list of Boids surrounding this Boid.
-        """
-        return [boid for boid in boids if boid != self and np.linalg.norm(location - boid.location) < radius]
-
-    def draw(self, boid):
+    def draw(self, boid, surface):
         """
         Draw the Boid oriented according to its velocity.
         """
@@ -68,8 +62,47 @@ class BasicBehaviour:
 
         # Translate to boid's position
         translated_points = rotated_points + boid.location
-        pygame.draw.polygon(boid.surface, boid.colour, translated_points.astype(int))
+        pygame.draw.polygon(surface, boid.colour, translated_points.astype(int))
 
+    def updateLocation(self, location, velocity, sky):
+        """
+        Update the location of the Boid based on its current location and velocity.
+        """ 
+        location += velocity
+
+        screen_width, screen_height = sky
+
+        # Reflect velocity if hitting walls
+        if not (0 <= location[0] <= screen_width):
+            velocity[0] *= -1
+        if not (0 <= location[1] <= screen_height):
+            velocity[1] *= -1
+
+        return location, velocity
+    
+    def updateVelocity(self, surrounding, location, velocity):
+        """
+        Update the velocity of the Boid based on the flock's behavior.
+        """
+        velocity += self.apply(surrounding, location, velocity)
+        velocity = self.normaliseVelocity(velocity, self.maxSpeed)
+
+        return velocity
+    
+    def normaliseVelocity(self, vector, scalingFactor=1.0):
+        """
+        Normalize a velocity vector to a fixed speed.
+        """
+        magnitude = np.linalg.norm(vector)
+        if magnitude == 0:
+            return np.zeros(2, dtype=np.float64)
+        return (vector / magnitude) * scalingFactor
+
+    def updateSurrounding(self, location, boids, radius=100):
+        """
+        Update the list of Boids surrounding this Boid.
+        """
+        return [boid for boid in boids if boid != self and np.linalg.norm(location - boid.location) < radius]
 class FlockingBehaviour(BasicBehaviour):
     """
     Standard flocking behaviour: cohesion, alignment, and separation.

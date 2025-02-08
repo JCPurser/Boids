@@ -2,12 +2,10 @@ import pygame
 import numpy as np
 
 class Boid:
-    def __init__(self, name, flock, surface, cooperation, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
+    def __init__(self, surface, cooperation, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
         """
         Initialize a new Boid instance.
         """
-        self.name = name
-        self.flock = flock
         self.surface = surface
         self.cooperation = cooperation
 
@@ -16,16 +14,21 @@ class Boid:
         self.velocity = np.array(velocity, dtype=np.float64)
 
         self.surrounding = []
+        self.reproduction = 0
+        self.age = 0
 
     def update(self, behaviour, boids):
         """
         Update the state of the Boid using the flock's behavior.
         """
+        self.reproduction += 1
+        self.age += 1
+
         self.surrounding = behaviour.updateSurrounding(self.location, boids)
         self.updateLocation()
         self.updateVelocity(behaviour)
 
-    def updateLocation(self):
+    def updateLocation(self, behaviour):
         """
         Update the location of the Boid based on its current location and velocity.
         """ 

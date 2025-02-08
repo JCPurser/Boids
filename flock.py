@@ -30,9 +30,9 @@ class Flock:
         self.boids = []
         for boid in range(size):
             if boid < num_cooperative:
-                self.boids.append(Boid(boid, self.name, self.surface, True, colour=colour, location=locations[boid]))
+                self.boids.append(Boid(self.surface, True, colour=colour, location=locations[boid]))
             else:
-                self.boids.append(Boid(boid, self.name, self.surface, False, colour=colour, location=locations[boid]))
+                self.boids.append(Boid(self.surface, False, colour=colour, location=locations[boid]))
 
     def set_behaviour(self, behaviour):
         """
@@ -56,12 +56,19 @@ class Flock:
         """
         Update the state of the flock.
         """
-        if self.interFlocking:
-            for boid in self.boids:
-                boid.update(self.behaviour, boids)
-        else:
-            for boid in self.boids:
-                boid.update(self.behaviour, self.boids)
+        for boid in self.boids:
+            """
+            if boid.reproduction > 100:
+                self.boids.append(Boid(self.surface, boid.cooperation, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
+                boid.reproduction = 0
+            
+            if boid.age > 100:
+                self.boids.remove(boid)
+            """
+            if self.interFlocking:
+                    boid.update(self.behaviour, boids)
+            else:
+                    boid.update(self.behaviour, self.boids)
 
     def draw(self):
         """

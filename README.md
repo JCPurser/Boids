@@ -48,7 +48,10 @@ python sky.py
 - Populate templates in boidBehaviour.py.
 - Add in greater UI interactability.
 - Integrate collaboration.
-    - Add some repoduction metric.
+    - Add some repoduction metric. (FIX THIS)
     - Add in some cost to reproduction.
     - Consider, everytime two meet they undergo some resource interaction depending on C/D. See how ratio of C/D boids change over time.
 - Permit greater ranges of speed, prevent renormalising to 5.
+- Move velocity update, location update, and normalisation to behaviour.
+    - Make different types of rules for how walls work.
+    - Make vector normalisation more generic.

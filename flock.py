@@ -15,11 +15,12 @@ BEHAVIOUR_MAP = {
     "cooperative": CooperativeFlocking
 }
 class Flock:
-    def __init__(self, sky, coop=0.5, size=100, colour=(0, 255, 0), behaviour="directional", interFlocking=True):
+    def __init__(self, sky, coop=0.5, size=100, colour=(0, 255, 0), behaviour="directional", interFlocking=True, hmd=True):
         """
         Initialize a flock of Boids.
         """
         self.interFlocking = interFlocking
+        self.hmd = hmd #Hatches and Dispatches working, Matches to be implemented.
 
         self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         locations = self.random_location(sky, size)
@@ -49,11 +50,11 @@ class Flock:
         """
         for boid in self.boids:
             
-            if boid.food > 100:
+            if boid.food > 100 and self.hmd:
                 self.boids.append(Boid(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
                 boid.food = 0
             
-            if boid.age > 200:
+            if boid.age > 300 and self.hmd:
                 self.boids.remove(boid)
             
             if self.interFlocking:

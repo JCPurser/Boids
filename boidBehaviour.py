@@ -251,4 +251,4 @@ class CooperativeFlocking(FlockingBehaviour):
         """
         Update the food level of the Boid. With sharing.
         """
-        return 1
+        return np.random.randint(2)

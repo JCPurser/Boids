@@ -48,14 +48,14 @@ class Flock:
         Update the state of the flock.
         """
         for boid in self.boids:
-            """
+            
             if boid.reproduction > 100:
-                self.boids.append(Boid(self.surface, boid.cooperation, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
+                self.boids.append(Boid(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
                 boid.reproduction = 0
             
             if boid.age > 100:
                 self.boids.remove(boid)
-            """
+            
             if self.interFlocking:
                     boid.update(self.behaviour, boids, sky)
             else:

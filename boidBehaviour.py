@@ -210,7 +210,7 @@ class CooperativeFlocking(FlockingBehaviour):
     """
     Cooperative behaviour: Boids work together to reproduce.
     """
-    def draw(self, boid):
+    def draw(self, boid, surface):
         """
         Draw the Boid oriented according to its velocity.
         """
@@ -230,11 +230,11 @@ class CooperativeFlocking(FlockingBehaviour):
         ])
         rotated_points = np.dot(points, rotation_matrix.T)
 
-        if boid.cooperation:
+        if boid.coop:
             colour = (0, 255, 0)
         else:
             colour = (255, 0, 0)
 
         # Translate to boid's position
         translated_points = rotated_points + boid.location
-        pygame.draw.polygon(boid.surface, colour, translated_points.astype(int))
+        pygame.draw.polygon(surface, colour, translated_points.astype(int))

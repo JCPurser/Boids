@@ -17,8 +17,10 @@ class Sky:
         self.font = pygame.font.Font(None, 24)
 
         self.flocks = []
-        self.flocks.append(Flock(dimensions, coop=1.0, size=10, colour=(0, 255, 0)))
-        self.flocks.append(Flock(dimensions, coop=0.75, size=10, colour=(255, 0, 0)))
+        self.flocks.append(Flock(coop=1.0, size=50, colour=(0, 255, 0), boid_type="basic"))
+        self.flocks.append(Flock(coop=0.0, size=50, colour=(255, 0, 0), boid_type="basic"))
+
+        self.drawCoop = True
 
         if len(self.flocks) > 9 :
             print("Numeber of flocks should be less than 10")
@@ -41,12 +43,44 @@ class Sky:
         """
         self.surface.fill((255, 255, 255))
 
-        for flock in self.flocks:
-            flock.draw(self.surface)
+        for boid in self.boids:
+            self.draw_boid(boid)
         
         self.draw_ui()
 
         pygame.display.flip()
+
+    def draw_boid(self, boid):
+        """
+        Draw the Boid oriented according to its velocity.
+        """
+        angle = np.arctan2(boid.velocity[1], boid.velocity[0])
+
+        length = 10
+        points = np.array([
+            [length, 0],
+            [-length * 0.5, length * 0.5],
+            [-length * 0.5, -length * 0.5]
+        ])
+
+        # Rotate points
+        rotation_matrix = np.array([
+            [np.cos(angle), -np.sin(angle)],
+            [np.sin(angle), np.cos(angle)]
+        ])
+        rotated_points = np.dot(points, rotation_matrix.T)
+
+        if self.drawCoop:
+            if boid.coop:
+                colour = (0, 255, 0)
+            else:
+                colour = (255, 0, 0)
+        else:
+            colour = boid.colour
+
+        # Translate to boid's position
+        translated_points = rotated_points + boid.location
+        pygame.draw.polygon(self.surface, colour, translated_points.astype(int))
 
     def draw_ui(self):
         """
@@ -56,7 +90,7 @@ class Sky:
         for i, flock in enumerate(self.flocks):
             if len(flock.boids) != 0:
                 avg_speed = sum(np.linalg.norm(boid.velocity) for boid in flock.boids) / len(flock.boids)
-                text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.behaviour.__class__.__name__} | Interflocking: {flock.interFlocking}"
+                text = f"Flock {i}: {len(flock.boids)} boids | Avg Speed: {avg_speed:.2f} | Behavior: {flock.boid_type} | Interflocking: {flock.interFlocking}"
             else:
                 text = f"Flock {i}: Dead"
             text_surface = self.font.render(text, True, (0, 0, 0))
@@ -74,21 +108,6 @@ class Sky:
                     if pygame.K_0 <= event.key <= pygame.K_9:
                         selected_flock = event.key - pygame.K_0
 
-                    if event.key == pygame.K_f:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "flocking")
-                    elif event.key == pygame.K_d:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "directional")
-                    elif event.key == pygame.K_s:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "stationary")
-                    elif event.key == pygame.K_o:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "omniscient")
-                    elif event.key == pygame.K_m:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "migratory")
-                    elif event.key == pygame.K_e:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "evasion")
-                    elif event.key == pygame.K_c:
-                        self.apply_to_flocks(selected_flock, "set_behaviour", "cooperative")
-
                     elif event.key == pygame.K_UP:
                         self.apply_to_flocks(selected_flock, "adjust_speed", amount=1.0)
 
@@ -100,6 +119,8 @@ class Sky:
 
                     elif event.key == pygame.K_i:
                         self.apply_to_flocks(selected_flock, "toggle_interflocking")
+                    elif event.key == pygame.K_l:
+                        self.drawCoop = not self.drawCoop
 
             self.update()
             self.draw()

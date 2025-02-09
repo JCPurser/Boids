@@ -51,3 +51,4 @@ python sky.py
     - Consider, everytime two meet they undergo some resource interaction depending on C/D. See how ratio of C/D boids change over time.
 - Permit greater ranges of speed, prevent renormalising to 5.
 - Make different types of rules for how walls work.
+- Create probabilistic death rate.

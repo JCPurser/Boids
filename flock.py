@@ -1,37 +1,50 @@
-from boid import Boid
+from boid import BasicBoid, DirectionalBoid, StationaryBoid, OmniscientBoid, MigratoryBoid, EvasiveBoid, CooperativeBoid
 import numpy as np
-from boidBehaviour import FlockingBehaviour, DirectionalFlocking, StationaryBehaviour, OmniscientFlocking, MigratoryFlocking, EvasionFlocking, CooperativeFlocking
 
 """
 Behavior map for flocking behaviors. Vector weights can be set here
 """
-BEHAVIOUR_MAP = {
-    "flocking": FlockingBehaviour,
-    "directional":  DirectionalFlocking,
-    "stationary": StationaryBehaviour,
-    "omniscient":   OmniscientFlocking,
-    "migratory": MigratoryFlocking,
-    "evasion": EvasionFlocking,
-    "cooperative": CooperativeFlocking
+BOID_MAP = {
+    "basic": BasicBoid,
+    "directional": DirectionalBoid,
+    "stationary": StationaryBoid,
+    "omniscient": OmniscientBoid,
+    "migratory": MigratoryBoid,
+    "evasive": EvasiveBoid,
+    "cooperative": CooperativeBoid
 }
 class Flock:
-    def __init__(self, sky, coop=0.5, size=100, colour=(0, 255, 0), behaviour="directional", interFlocking=True, hmd=True):
+    def __init__(self, sky=(100,100), coop=0.5, size=100, colour=(0, 255, 0), boid_type="basic"):
         """
         Initialize a flock of Boids.
         """
-        self.interFlocking = interFlocking
-        self.hmd = hmd #Hatches and Dispatches working, Matches to be implemented.
+        self.interFlocking = False
+        self.life_cycle = True
+        self.boid_type = boid_type
 
-        self.behaviour = BEHAVIOUR_MAP.get(behaviour, BEHAVIOUR_MAP["flocking"])()
         locations = self.random_location(sky, size)
-        num_cooperative = int(coop * size)
         
         self.boids = []
+        num_cooperative = int(coop * size)
         for boid in range(size):
             if boid < num_cooperative:
-                self.boids.append(Boid(coop=True, colour=colour, location=locations[boid]))
+                self.boids.append(BOID_MAP.get(boid_type, BOID_MAP["basic"])(coop=True, colour=colour, location=locations[boid]))
             else:
-                self.boids.append(Boid(coop=False, colour=colour, location=locations[boid]))
+                self.boids.append(BOID_MAP.get(boid_type, BOID_MAP["basic"])(coop=False, colour=colour, location=locations[boid]))
+
+    def update(self, boids, sky):
+        """
+        Update the state of the flock.
+        """
+        for boid in self.boids: 
+            if boid.food > 100 and self.life_cycle:
+                self.boids.append(BOID_MAP.get(self.boid_type, BOID_MAP["basic"])(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
+                boid.food = 0
+            
+            if boid.age > 300 and self.life_cycle: self.boids.remove(boid)
+            
+            if self.interFlocking: boid.update(boids, sky)
+            else: boid.update(self.boids, sky)
 
     def random_location(self, sky, size):
         """
@@ -43,44 +56,13 @@ class Flock:
         locations = np.random.normal(loc=[center_x, center_y], scale=[std_dev_x, std_dev_y], size=(size, 2))
         locations = np.clip(locations, [0, 0], [screen_width, screen_height])
         return locations.tolist()
-    
-    def update(self, boids, sky):
-        """
-        Update the state of the flock.
-        """
-        for boid in self.boids:
-            
-            if boid.food > 100 and self.hmd:
-                self.boids.append(Boid(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
-                boid.food = 0
-            
-            if boid.age > 300 and self.hmd:
-                self.boids.remove(boid)
-            
-            if self.interFlocking:
-                    boid.update(self.behaviour, boids, sky)
-            else:
-                    boid.update(self.behaviour, self.boids, sky)
-
-    def draw(self, surface):
-        """
-        Draw the flock to the provided drawing surface.
-        """
-        for boid in self.boids:
-            self.behaviour.draw(boid, surface)
 
     def adjust_speed(self, amount):
             """
             Increase or decrease the speed of all boids in the flock.
             """
-            self.behaviour.maxSpeed += amount
-
-    def set_behaviour(self, behaviour):
-        """
-        Change behavior for the entire flock dynamically.
-        """
-        if behaviour in BEHAVIOUR_MAP:
-            self.behaviour = BEHAVIOUR_MAP[behaviour]()
+            for boid in self.boids:
+                boid.maxSpeed += amount
 
     def toggle_interflocking(self):
         """

@@ -18,7 +18,7 @@ class Sky:
 
         self.flocks = []
         self.flocks.append(Flock(coop=1.0, size=50, colour=(0, 255, 0), boid_type="basic"))
-        self.flocks.append(Flock(coop=0.0, size=50, colour=(255, 0, 0), boid_type="basic"))
+        self.flocks.append(Flock(coop=0.0, size=50, colour=(255, 0, 0), boid_type="cooperative"))
 
         self.drawCoop = True
 
@@ -119,7 +119,7 @@ class Sky:
 
                     elif event.key == pygame.K_i:
                         self.apply_to_flocks(selected_flock, "toggle_interflocking")
-                    elif event.key == pygame.K_l:
+                    elif event.key == pygame.K_c:
                         self.drawCoop = not self.drawCoop
 
             self.update()
@@ -130,12 +130,7 @@ class Sky:
 
     def apply_to_flocks(self, flock_index, action, *args, **kwargs):
         """
-        Apply an action (method) to either all flocks (if flock_index == 0)
-        or just the selected flock.
-        
-        :param flock_index: 0 for all flocks, otherwise the specific flock number (1-9)
-        :param action: The method name to call on each flock
-        :param *args, **kwargs: Any arguments to pass to the method
+        Apply a function to either all flocks or just the selected flock.
         """
         if flock_index == 0:
             for flock in self.flocks:

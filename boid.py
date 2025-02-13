@@ -215,13 +215,38 @@ class OmniscientBoid(BasicBoid):
 
 class MigratoryBoid(BasicBoid):
     """
-    Migratory behaviour: Boids move towards a fixed location.
+    Migratory behaviour: Boids move towards a specific location.
     """
-    pass
+    def apply(self):
+        """
+        Apply the three rules of flocking. Plus an additional one.
+        """
+        self.vector_weights.append(1.0)
+
+        collision_avoidance = self.collision_avoidance()
+        velocity_matching = self.velocity_matching()
+        flock_centering = self.flock_centering()
+        migration_factor = self.migration_factor()
+        
+        return (
+            self.vector_weights[0] * collision_avoidance +
+            self.vector_weights[1] * velocity_matching +
+            self.vector_weights[2] * flock_centering +
+            self.vector_weights[3] * migration_factor
+        )
+    
+    def migration_factor(self, migration_location=(500, 500)):
+        """
+        Move towards a specific location.
+        
+        migration_vector = np.array(migration_location, dtype=np.float64) - self.location
+        return migration_vector / np.linalg.norm(migration_vector)
+        """
+        pass
 
 class EvasiveBoid(BasicBoid):
     """
-    Evasion behaviour: Boids attempt to avoid obstacles.
+    Evasion behaviour: Boids attempt to avoid obstacles, like walls, instead of bouncing of them.
     """
     pass
 

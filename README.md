@@ -41,7 +41,8 @@ python sky.py
 ## Controls
 - **Number Keys**: Select the flock to be altered.
 - **q**: Exit the simulation.
-- **f, n, d, o**: Flocking modes basic, non-flocking, directional, and omniscient respectivly.
+- **i**: Toggle interflock interactions.
+- **c**: Toggle colour based on flock or cooperation.
 - **Up and Down**: Increase and decrease flock speed.
 
 ## To Do
@@ -49,6 +50,5 @@ python sky.py
 - Add in greater UI interactability.
 - Integrate collaboration.
     - Consider, everytime two meet they undergo some resource interaction depending on C/D. See how ratio of C/D boids change over time.
-- Permit greater ranges of speed, prevent renormalising to 5.
 - Make different types of rules for how walls work.
 - Create probabilistic death rate.

@@ -2,7 +2,7 @@ from boid import BasicBoid, DirectionalBoid, StationaryBoid, OmniscientBoid, Mig
 import numpy as np
 
 """
-Behavior map for flocking behaviors. Vector weights can be set here
+Behavior map for flocking behaviors.
 """
 BOID_MAP = {
     "basic": BasicBoid,

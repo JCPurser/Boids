@@ -1,4 +1,4 @@
-from boid import BasicBoid, DirectionalBoid, StationaryBoid, OmniscientBoid, MigratoryBoid, EvasiveBoid, CooperativeBoid
+from boid import BasicBoid, DirectionalBoid, StationaryBoid, OmniscientBoid, MigratoryBoid, EvasiveBoid, CooperativeBoid, StationaryCoop, RandomCoop
 import numpy as np
 
 """
@@ -7,14 +7,15 @@ Behavior map for flocking behaviors.
 BOID_MAP = {
     "basic": BasicBoid,
     "directional": DirectionalBoid,
-    "stationary": StationaryBoid,
+    "stationary": StationaryCoop,
     "omniscient": OmniscientBoid,
     "migratory": MigratoryBoid,
     "evasive": EvasiveBoid,
-    "cooperative": CooperativeBoid
+    "cooperative": CooperativeBoid,
+    "random": RandomCoop
 }
 class Flock:
-    def __init__(self, sky=(100,100), coop=0.5, size=100, colour=(0, 255, 0), boid_type="basic"):
+    def __init__(self, sky=(1000,1000), coop=0.5, size=100, colour=(0, 255, 0), boid_type="basic"):
         """
         Initialize a flock of Boids.
         """
@@ -36,13 +37,7 @@ class Flock:
         """
         Update the state of the flock.
         """
-        for boid in self.boids: 
-            if boid.food > 100 and self.life_cycle:
-                self.boids.append(BOID_MAP.get(self.boid_type, BOID_MAP["basic"])(boid.coop, colour=(0,0,255), location=boid.location, velocity=boid.velocity))
-                boid.food = 0
-            
-            if boid.age > 300 and self.life_cycle: self.boids.remove(boid)
-            
+        for boid in self.boids:             
             if self.interFlocking: boid.update(boids, sky)
             else: boid.update(self.boids, sky)
 

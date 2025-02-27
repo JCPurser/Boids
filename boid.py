@@ -15,8 +15,7 @@ class Boid:
         self.velocity = np.array(velocity, dtype=np.float64)
 
         self.surrounding = []
-        self.food = 0
-        self.age = 0
+        self.score = 0
 
     def update(self, boids, sky):
         """
@@ -25,8 +24,6 @@ class Boid:
         self.updateSurrounding(boids)
         self.updateVelocity()
         self.updateLocation(sky)
-        self.updateFood()
-        self.updateAge()
 
     def updateSurrounding(self, boids):
         """
@@ -45,19 +42,7 @@ class Boid:
         Update the location of the Boid based on its current location and velocity.
         """
         raise NotImplementedError
-    
-    def updateFood(self):
-        """
-        Update the food level of the Boid.
-        """
-        raise NotImplementedError
 
-    def updateAge(self):
-        """
-        Update the age of the Boid.
-        """
-        raise NotImplementedError
-    
 class BasicBoid(Boid):
     def apply(self):
         """
@@ -123,19 +108,7 @@ class BasicBoid(Boid):
         """
         Update the list of Boids surrounding this Boid.
         """
-        self.surrounding = [boid for boid in boids if boid != self and np.linalg.norm(self.location - boid.location) < radius]
-    
-    def updateFood(self):
-        """
-        Update the food level of the Boid.
-        """
-        self.food += np.random.randint(2)
-
-    def updateAge(self):
-        """
-        Update the age of the Boid.
-        """
-        self.age += 1
+        self.surrounding = [boid for boid in boids if boid != self and np.linalg.norm(self.location - boid.location) < radius]   
 
 class StationaryBoid(BasicBoid):
     """
@@ -147,8 +120,6 @@ class StationaryBoid(BasicBoid):
         """
         self.updateSurrounding(boids)
         self.updateLocation(sky)
-        self.updateFood()
-        self.updateAge()
     
 class DirectionalBoid(BasicBoid):
     """
@@ -254,16 +225,93 @@ class CooperativeBoid(BasicBoid):
     """
     Cooperative behaviour: Boids work together to reproduce.
     """
-    def updateFood(self):
+
+    def update(self, boids, sky):
         """
-        Update the food level of the Boid. With sharing.
+        Update the state of the Boid using the flock's behavior.
         """
-        food = np.random.randint(2)
-        if self.coop and food:
-            shared = False
-            for boid in self.surrounding:
-                if boid.coop and not shared:
-                    boid.food += 0.5
-                    food = 0.5
-                    shared = True
-        self.food += food
+        self.updateSurrounding(boids)
+        self.play_prisoners_dilemma(self.surrounding)
+        self.update_strategy(self.surrounding)
+        self.updateVelocity()
+        self.updateLocation(sky)
+
+    def play_prisoners_dilemma(self, neighbors):
+        """
+        Play the Prisoner's Dilemma with nearby boids.
+        """
+        r = 0.25
+
+        PAYOFFS = {
+            (True, True): (1 - r, 1 - r),
+            (True, False): (r, 1),
+            (False, True): (1, r),
+            (False, False): (0, 0)
+        }
+        
+        total_score = 0
+        for neighbor in neighbors:
+
+            score, neighbor_score = PAYOFFS[(self.coop, neighbor.coop)]
+            total_score += score
+            neighbor.score += neighbor_score
+        
+        self.score += total_score
+    
+    def update_strategy(self, neighbors):
+            """
+            Update the boid's strategy based on weighted probabilities of neighbors' success.
+            """
+            adoption_rate = 0.1
+
+            if not neighbors:
+                return
+            
+            scores = np.array([neighbor.score for neighbor in neighbors])
+            min_score = min(scores, default=0)
+            scores = scores - min_score + 0.0000001  # Normalize to avoid zero probability
+            probabilities = scores / scores.sum()
+            
+            chosen_neighbor = np.random.choice(neighbors, p=probabilities)
+            if np.random.rand() < adoption_rate:
+                self.coop = chosen_neighbor.coop
+                self.colour = (0, 255, 0) if self.coop else (255, 0, 0)  # Green for coop, Red for defect
+
+class StationaryCoop(CooperativeBoid):
+    """
+    Stationary cooperative behaviour: Boids do not move and work together to reproduce.
+    """
+    def update(self, boids, sky):
+        self.updateSurrounding(boids)
+        self.play_prisoners_dilemma(self.surrounding)
+        self.update_strategy(self.surrounding)
+
+class RandomCoop(CooperativeBoid):
+    """
+    Random cooperative behaviour: Boids move randomly and work together to reproduce.
+    """
+    def __init__(self, coop=True, colour=(0, 255, 0), location=(0, 0), velocity=(0,0)):
+        """
+        Initialize a new Boid instance.
+        """
+        self.coop = coop
+        self.colour = colour
+
+        self.maxSpeed = 5.0
+        self.vector_weights = [2.0, 1.0, 1.0]
+
+        self.location = np.array(location, dtype=np.float64)
+        self.velocity = np.array(velocity if velocity != (0,0) else (np.random.uniform(-1, 1), np.random.uniform(-1, 1)), dtype=np.float64)
+        self.velocity = (self.velocity / (np.linalg.norm(self.velocity) + 0.0001)) * self.maxSpeed
+
+        self.surrounding = []
+        self.score = 0
+    
+    def update(self, boids, sky):
+        """
+        Update the state of the Boid using the flock's behavior.
+        """
+        self.updateSurrounding(boids)
+        self.play_prisoners_dilemma(self.surrounding)
+        self.update_strategy(self.surrounding)
+        self.updateLocation(sky)
